@@ -78,36 +78,35 @@ export default function Contact() {
       return;
     }
 
-    // Direct submission to FormSubmit (delivers directly to deepikasampathh@gmail.com)
+    // Direct submission to Web3Forms (delivers directly to deepikasampathh@gmail.com)
     try {
-      const formData = new FormData();
-      formData.append('name', formState.name);
-      formData.append('email', formState.email);
-      formData.append('message', formState.message);
-      formData.append('_captcha', 'false');
-      formData.append('_template', 'table');
-      formData.append('_subject', `New Portfolio Message from ${formState.name}`);
-
-      const response = await fetch(`https://formsubmit.co/ajax/${contact.email}`, {
+      const web3FormsKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || '79fde37e-b208-45e8-9142-95bb7c6d847f';
+      
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: formData
+        body: JSON.stringify({
+          access_key: web3FormsKey,
+          name: formState.name,
+          email: formState.email,
+          message: formState.message,
+          subject: `New Portfolio Message from ${formState.name}`,
+          from_name: formState.name
+        })
       });
 
       const data = await response.json();
-      if (response.ok && (data.success === "true" || data.success === true)) {
+      if (data.success) {
         setStatus('success');
         setFormState({ name: '', email: '', message: '' });
-      } else if (data.message && (data.message.includes('Activation') || data.message.includes('activation'))) {
-        setStatus('error');
-        setErrorMessage('Check your Gmail inbox (or Spam/Promotions folder) for an email from FormSubmit titled "Action Required: Activate Form" and click Activate Form.');
       } else {
         throw new Error(data.message || 'Form submission failed');
       }
     } catch (err) {
-      console.error('Form Submit Error:', err);
+      console.error('Web3Forms Error:', err);
       // Fallback: trigger mailto if network fails
       window.location.href = `mailto:${contact.email}?subject=Contact Form: ${encodeURIComponent(formState.name)}&body=${encodeURIComponent(formState.message)}`;
       setStatus('success');
