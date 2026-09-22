@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #050505;
+    color: #e2e8f0;
+  }
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: rgba(16, 16, 16, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-heavy {
+  background: rgba(16, 16, 16, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Glowing Animations */
+@keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.aurora-bg {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 255, 0.1) 0%,
+    rgba(127, 0, 255, 0.08) 35%,
+    rgba(0, 242, 254, 0.07) 70%,
+    rgba(5, 5, 5, 0) 100%
+  );
+  background-size: 400% 400%;
+  animation: aurora 20s ease infinite;
+}
+
+/* Moving Grid Overlay */
+.grid-bg {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+}
+
+/* Custom Text Clip Gradients */
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #ffffff 30%, #00f2fe 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #ffffff 30%, #7f00ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-blue-cyan {
+  background: linear-gradient(135deg, #00f2fe 0%, #0066ff 50%, #7f00ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glass Card Reflections */
+.glass-reflection {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-reflection::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.03) 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.03) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  transition: transform 0.8s ease-in-out;
+  pointer-events: none;
+}
+
+.glass-reflection:hover::after {
+  transform: translate(50%, 50%) rotate(30deg);
+}
+
+/* Circle Glass Frame Glow */
+.circle-glass-glow {
+  box-shadow: 
+    0 0 40px rgba(0, 242, 254, 0.25),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Cursor glow active */
+.cursor-glow {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 242, 254, 0.06) 0%,
+    rgba(127, 0, 255, 0.04) 30%,
+    rgba(0, 102, 255, 0.02) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Timeline Custom styles */
+.timeline-line {
+  background: linear-gradient(180deg, #00f2fe 0%, #0066ff 50%, #7f00ff 100%);
+}
+
+.timeline-dot-cyan {
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.8);
+}
+.timeline-dot-purple {
+  box-shadow: 0 0 15px rgba(127, 0, 255, 0.8);
+}
