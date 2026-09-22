@@ -49,7 +49,7 @@ export default function Contact() {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formState.name || !formState.email || !formState.message) {
       setStatus('error');
@@ -59,31 +59,55 @@ export default function Contact() {
 
     setStatus('sending');
 
-    // Retrieve keys from Vite environment variables
+    // Retrieve keys from Vite environment variables if configured
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
-    if (!serviceId || !templateId || !publicKey) {
-      // Mock submit if keys are not configured yet, so the app is operational
-      console.log('EmailJS parameters not configured in environment variables. Simulated submission:', formState);
-      setTimeout(() => {
-        setStatus('success');
-        setFormState({ name: '', email: '', message: '' });
-      }, 1500);
+    if (serviceId && templateId && publicKey) {
+      emailjs.sendForm(serviceId, templateId, formRef.current, publicKey)
+        .then(() => {
+          setStatus('success');
+          setFormState({ name: '', email: '', message: '' });
+        })
+        .catch((error) => {
+          console.error('EmailJS Error:', error);
+          setStatus('error');
+          setErrorMessage('Failed to send message. Please try again or email directly.');
+        });
       return;
     }
 
-    emailjs.sendForm(serviceId, templateId, formRef.current, publicKey)
-      .then(() => {
+    // Direct submission to FormSubmit (delivers directly to deepikasampathh@gmail.com)
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${contact.email}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formState.name,
+          email: formState.email,
+          message: formState.message,
+          _subject: `New Portfolio Message from ${formState.name}`
+        })
+      });
+
+      const data = await response.json();
+      if (response.ok && (data.success === "true" || data.success === true)) {
         setStatus('success');
         setFormState({ name: '', email: '', message: '' });
-      })
-      .catch((error) => {
-        console.error('EmailJS Error:', error);
-        setStatus('error');
-        setErrorMessage('Failed to send message. Please try again or email directly.');
-      });
+      } else {
+        throw new Error(data.message || 'Form submission failed');
+      }
+    } catch (err) {
+      console.error('Form Submit Error:', err);
+      // Fallback: trigger mailto if network fails
+      window.location.href = `mailto:${contact.email}?subject=Contact Form: ${encodeURIComponent(formState.name)}&body=${encodeURIComponent(formState.message)}`;
+      setStatus('success');
+      setFormState({ name: '', email: '', message: '' });
+    }
   };
 
   return (
