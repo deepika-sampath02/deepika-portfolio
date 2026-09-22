@@ -80,24 +80,29 @@ export default function Contact() {
 
     // Direct submission to FormSubmit (delivers directly to deepikasampathh@gmail.com)
     try {
+      const formData = new FormData();
+      formData.append('name', formState.name);
+      formData.append('email', formState.email);
+      formData.append('message', formState.message);
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+      formData.append('_subject', `New Portfolio Message from ${formState.name}`);
+
       const response = await fetch(`https://formsubmit.co/ajax/${contact.email}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          name: formState.name,
-          email: formState.email,
-          message: formState.message,
-          _subject: `New Portfolio Message from ${formState.name}`
-        })
+        body: formData
       });
 
       const data = await response.json();
       if (response.ok && (data.success === "true" || data.success === true)) {
         setStatus('success');
         setFormState({ name: '', email: '', message: '' });
+      } else if (data.message && (data.message.includes('Activation') || data.message.includes('activation'))) {
+        setStatus('error');
+        setErrorMessage('Check your Gmail inbox (or Spam/Promotions folder) for an email from FormSubmit titled "Action Required: Activate Form" and click Activate Form.');
       } else {
         throw new Error(data.message || 'Form submission failed');
       }
